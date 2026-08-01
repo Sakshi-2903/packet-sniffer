@@ -1,0 +1,9 @@
+build/
+build-release/
+compile_commands.json
+captures/*.pcap
+captures/*.pcapng
+!captures/.gitkeep
+*.o
+*.d
+.cache/

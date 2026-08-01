@@ -1,0 +1,118 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug: replay sample.pcap",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/netscope",
+      "args": [
+        "-r",
+        "captures/sample.pcap",
+        "--text"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "preLaunchTask": "build",
+      "setupCommands": [
+        {
+          "description": "pretty-print STL containers",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "osx": {
+        "MIMode": "lldb"
+      }
+    },
+    {
+      "name": "Debug: unit tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/netscope_tests",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "preLaunchTask": "test",
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "osx": {
+        "MIMode": "lldb"
+      }
+    },
+    {
+      "name": "Debug: replay sample.pcap (dashboard, in terminal)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/netscope",
+      "args": [
+        "-r",
+        "captures/sample.pcap"
+      ],
+      "cwd": "${workspaceFolder}",
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "preLaunchTask": "build",
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "osx": {
+        "MIMode": "lldb"
+      }
+    },
+    {
+      "name": "Debug: live capture (grant permissions task first)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/netscope",
+      "args": [
+        "-i",
+        "lo",
+        "--text",
+        "-c",
+        "50"
+      ],
+      "cwd": "${workspaceFolder}",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "preLaunchTask": "build",
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "osx": {
+        "MIMode": "lldb"
+      }
+    },
+    {
+      "name": "Attach to live capture (sudo gdbserver on :2345)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/netscope",
+      "miDebuggerServerAddress": "localhost:2345",
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "osx": {
+        "MIMode": "lldb"
+      }
+    }
+  ]
+}

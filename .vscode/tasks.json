@@ -1,0 +1,112 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "cmake: configure (debug)",
+      "type": "shell",
+      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug",
+      "problemMatcher": [],
+      "group": "none"
+    },
+    {
+      "label": "cmake: configure (release)",
+      "type": "shell",
+      "command": "cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release",
+      "problemMatcher": []
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "cmake --build build -j$(getconf _NPROCESSORS_ONLN)",
+      "dependsOn": "cmake: configure (debug)",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "Default build task (Ctrl+Shift+B)"
+    },
+    {
+      "label": "build: release",
+      "type": "shell",
+      "command": "cmake --build build-release -j$(getconf _NPROCESSORS_ONLN)",
+      "dependsOn": "cmake: configure (release)",
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "cmake --build build -j$(getconf _NPROCESSORS_ONLN) --target netscope_tests && ./build/netscope_tests",
+      "dependsOn": "cmake: configure (debug)",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "Build and run the unit test suite (M13)"
+    },
+    {
+      "label": "generate sample capture",
+      "type": "shell",
+      "command": "python3 tools/make_test_pcap.py captures/sample.pcap",
+      "problemMatcher": [],
+      "detail": "Builds a synthetic pcap with retransmissions, RSTs, DNS and ICMP"
+    },
+    {
+      "label": "run: replay sample capture (no root needed)",
+      "type": "shell",
+      "command": "./build/netscope -r captures/sample.pcap",
+      "dependsOn": [
+        "build",
+        "generate sample capture"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "run: live capture on loopback",
+      "type": "shell",
+      "command": "if [ \"$(uname)\" = \"Darwin\" ]; then sudo ./build/netscope -i lo0; else sudo ./build/netscope -i lo; fi",
+      "dependsOn": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "grant capture permissions",
+      "type": "shell",
+      "command": "if [ \"$(uname)\" = \"Darwin\" ]; then sudo chgrp admin /dev/bpf* && sudo chmod g+rw /dev/bpf* && echo 'BPF devices opened to the admin group (resets on reboot)'; else sudo setcap cap_net_raw,cap_net_admin=eip build/netscope && echo 'netscope can now capture without sudo'; fi",
+      "dependsOn": "build",
+      "problemMatcher": [],
+      "detail": "Linux: setcap on the binary (re-run after each rebuild). macOS: opens /dev/bpf* to the admin group until reboot."
+    },
+    {
+      "label": "debug server: live capture under sudo gdbserver",
+      "type": "shell",
+      "command": "sudo gdbserver localhost:2345 ./build/netscope -i lo",
+      "dependsOn": "build",
+      "isBackground": true,
+      "problemMatcher": [],
+      "detail": "Start this, then use the 'Attach to live capture' launch config"
+    },
+    {
+      "label": "run: capture to a pcap file",
+      "type": "shell",
+      "command": "if [ \"$(uname)\" = \"Darwin\" ]; then sudo ./build/netscope -i lo0 -w captures/out.pcap -c 200; else sudo ./build/netscope -i lo -w captures/out.pcap -c 200; fi",
+      "dependsOn": "build",
+      "problemMatcher": [],
+      "detail": "Writes a Wireshark-readable capture (M12)"
+    }
+  ]
+}

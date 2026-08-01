@@ -1,0 +1,10 @@
+{
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.configureOnOpen": true,
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.includePath": ["${workspaceFolder}/include"],
+  "files.associations": { "*.hpp": "cpp", "*.tpp": "cpp" },
+  "editor.rulers": [90],
+  "editor.formatOnSave": false,
+  "files.exclude": { "build/": true, "build-release/": true }
+}
