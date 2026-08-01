@@ -198,6 +198,40 @@ make test          # or: cmake --build build --target netscope_tests && ./build/
 truncated and malformed headers, DNS compression-pointer loops, Karn's
 algorithm and a pcap write/read round-trip. In VS Code: *Tasks: Run Test Task*.
 
+### Quick run: tests + live recording
+
+Use these exact steps when you want to both verify the build and record a real
+capture file.
+
+```bash
+# 1) Configure and build (debug)
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build -j$(getconf _NPROCESSORS_ONLN)
+
+# 2) Run the full unit test suite
+cmake --build build -j$(getconf _NPROCESSORS_ONLN) --target netscope_tests
+./build/netscope_tests
+```
+
+```bash
+# 3) Live capture and record to pcap (macOS loopback)
+sudo ./build/netscope -i lo0 -w captures/out.pcap -c 200
+
+# Linux loopback equivalent
+sudo ./build/netscope -i lo -w captures/out.pcap -c 200
+```
+
+```bash
+# 4) Replay the file you just recorded (no root needed)
+./build/netscope -r captures/out.pcap
+```
+
+In VS Code you can run the same flow using tasks:
+
+1. `test`
+2. `run: capture to a pcap file`
+3. `run: replay sample capture (no root needed)` (or replay your own with `./build/netscope -r captures/out.pcap`)
+
 ---
 
 ## How it works
